@@ -1,0 +1,147 @@
+body {
+  font-family: "Arial", sans-serif;
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+header {
+  background: #2b3355;
+  color: white;
+  padding: 30px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.2em;
+}
+
+.section {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.input-group {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-group label {
+  width: 180px;
+  font-weight: 600;
+  color: #2b3355;
+}
+
+input,
+select {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: border 0.3s ease;
+}
+
+.items-table {
+  width: 100%;
+  margin: 25px 0;
+  border-collapse: collapse;
+  background: white;
+}
+
+.items-table th {
+  background: #2b3355;
+  color: white;
+  padding: 12px;
+}
+
+.items-table td {
+  padding: 12px;
+  border: 1px solid #ecf0f1;
+}
+
+.total-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn {
+  background: #2b3355;
+  color: white;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #2b3355;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #7f8c8d;
+  margin-top: 40px;
+  font-size: 0.9em;
+}
+
+.firma-section {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.remove-btn {
+  background: #e74c3c;
+  padding: 8px 15px;
+}
+
+.remove-btn:hover {
+  background: #c0392b;
+}
+
+/* Estilo para el input con símbolo (precio unitario) */
+.input-with-symbol {
+  position: relative;
+}
+
+.input-with-symbol input {
+  padding-left: 20px;
+}
+
+.input-with-symbol::before {
+  content: "$";
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #555;
+}

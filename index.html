@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Generador de Presupuestos</title>
+    <!-- Vinculación de archivos CSS y JS -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Librerías para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.30/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <!-- Se resalta la terminación AR en negrita y subrayado -->
+      <h1>
+        Presupuest<span
+          style="color: #ebb962; font-weight: bold; text-decoration: underline"
+          >AR</span
+        >
+      </h1>
+      <p>Generador de presupuestos con estandares Argentinos</p>
+    </header>
+
+    <div class="section">
+      <h2>Datos del Emisor</h2>
+      <div class="input-group">
+        <label>N° Presupuesto:</label>
+        <input
+          type="number"
+          id="numeroPresupuesto"
+          placeholder="000100000025"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Fecha Presupuesto:</label>
+        <input
+          type="date"
+          id="fechaPresupuesto"
+          placeholder="01-03-2025"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Razón Social:</label>
+        <input
+          type="text"
+          id="emisorRazonSocial"
+          placeholder="El Norte Seguros S.A."
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>CUIT Emisor:</label>
+        <input
+          type="number"
+          id="emisorCuit"
+          placeholder="20793575890"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Domicilio:</label>
+        <input
+          type="text"
+          id="emisorDomicilio"
+          placeholder="Av. 9 de Julio 1234, Resistencia, Chaco"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Condición IVA:</label>
+        <select id="emisorIva" required>
+          <option value="">Seleccione...</option>
+          <option>RESPONSABLE INSCRIPTO</option>
+          <option>IVA EXENTO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Datos del Cliente</h2>
+      <div class="input-group">
+        <label>Razón Social:</label>
+        <input
+          type="text"
+          id="clienteRazonSocial"
+          value="INSTITUTO DEPORTE CHAQUEÑO"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Dirección:</label>
+        <input
+          type="text"
+          id="clienteDireccion"
+          value="Padre Cerqueira 2150"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Ciudad:</label>
+        <input type="text" id="clienteCiudad" value="Resistencia" required />
+      </div>
+      <div class="input-group">
+        <label>Provincia:</label>
+        <input type="text" id="clienteProvincia" value="Chaco" required />
+      </div>
+      <div class="input-group">
+        <label>CUIT Cliente:</label>
+        <input type="number" id="clienteCuit" value="30712337679" required />
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Items del Presupuesto</h2>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Unidades</th>
+            <th>Precio Unitario</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody">
+          <tr>
+            <td>
+              <input
+                type="text"
+                class="item-desc"
+                placeholder="Botellas de agua mineral por 500ml"
+                required
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                class="item-units"
+                min="0"
+                placeholder="100"
+                required
+              />
+            </td>
+            <td>
+              <div class="input-with-symbol">
+                <input
+                  type="number"
+                  class="item-price"
+                  min="0"
+                  step="0.01"
+                  placeholder="150"
+                  required
+                />
+              </div>
+            </td>
+            <td class="item-total">$387.200,00</td>
+            <td>
+              <button class="btn remove-btn">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn" onclick="addItem()" style="margin-top: 15px">
+        Agregar Item
+      </button>
+    </div>
+
+    <div class="section total-section">
+      <div class="input-group">
+        <label>Forma de Pago:</label>
+        <select id="formaPago" required>
+          <option value="">Seleccione...</option>
+          <option>Transferencia Bancaria</option>
+          <option>Efectivo</option>
+          <option>Cheque</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Total Bruto:</label>
+        <span id="totalBruto">$0</span>
+      </div>
+      <div class="input-group">
+        <label>IVA %:</label>
+        <input
+          type="number"
+          id="ivaPercent"
+          min="0"
+          value="0"
+          step="0.01"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <label>Total Presupuesto:</label>
+        <span id="totalPresupuesto">$0</span>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0">
+      <button
+        class="btn"
+        onclick="generatePDF()"
+        style="padding: 15px 40px; font-size: 16px"
+      >
+        Descargar PDF
+      </button>
+    </div>
+
+    <footer>© 2025 PresupuestAR - Todos los derechos reservados</footer>
+
+    <!-- Vinculación del archivo JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>
