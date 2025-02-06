@@ -179,20 +179,18 @@ function generatePDF() {
   const xText = "X";
   const xPosY = 30;
   doc.text(xText, pageWidth / 2, xPosY, { align: "center" });
-  // Calcular dimensiones del texto y dibujar un rectángulo alrededor de la "X"
   const xWidth = doc.getTextWidth(xText);
   const xHeight = 10; // altura aproximada del texto
   const xBoxPadding = 2;
   const xBoxX = pageWidth / 2 - xWidth / 2 - xBoxPadding;
-  const xBoxY = xPosY - 5 - xBoxPadding; // ajustar para centrar verticalmente
+  const xBoxY = xPosY - 5 - xBoxPadding;
   const xBoxWidth = xWidth + 2 * xBoxPadding;
   const xBoxHeight = xHeight + 2 * xBoxPadding;
   doc.rect(xBoxX, xBoxY, xBoxWidth, xBoxHeight);
 
-  // Colocar la leyenda "DOCUMENTO NO VÁLIDO COMO FACTURA" con separación suficiente
+  // Leyenda debajo de la "X" (separa 4 mm después del recuadro)
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  // Se ubica por debajo de la "X", dejando 4 mm de espacio
   doc.text(
     "DOCUMENTO NO VÁLIDO COMO FACTURA",
     pageWidth / 2,
@@ -203,28 +201,25 @@ function generatePDF() {
   // ----------------------
   // DATOS DEL EMISOR (ENCUADRADOS)
   // ----------------------
-  // Ubicación y dimensiones del recuadro para los datos del emisor
   doc.setFontSize(10);
   const emitterX = margin + 5;
-  const emitterY = 42; // comienza más abajo para dar espacio al encabezado
+  const emitterY = 42;
   const emitterWidth = 90;
   const emitterHeight = 35;
   doc.rect(emitterX, emitterY, emitterWidth, emitterHeight);
 
-  // Función auxiliar para escribir indicador y dato en línea
+  // Función auxiliar para escribir indicador y dato en línea (continuado)
   const writeLine = (x, y, label, value) => {
     doc.setFont("helvetica", "bold");
     doc.text(label, x, y);
     const labelWidth = doc.getTextWidth(label);
     doc.setFont("helvetica", "normal");
-    // Se escribe el dato justo después del indicador
     doc.text(value, x + labelWidth, y);
   };
 
   let textX = emitterX + 3;
   let textY = emitterY + 7;
-  const lineSpacing = 6; // separación entre líneas
-
+  const lineSpacing = 6;
   writeLine(
     textX,
     textY,
@@ -309,7 +304,7 @@ function generatePDF() {
   // ----------------------
   // TABLA DE ÍTEMS
   // ----------------------
-  // Ubicar la tabla debajo de los recuadros; se deja espacio suficiente para que no se pisen
+  // Configuramos la cabecera y generamos la matriz de filas
   const tableStartY = emitterY + emitterHeight + 15;
   const headers = ["Descripción", "Unidades", "Precio Unitario", "Total"];
   const rows = [];
@@ -329,24 +324,88 @@ function generatePDF() {
     ]);
   });
 
-  doc.autoTable({
-    startY: tableStartY,
-    head: [headers],
-    body: rows,
-    theme: "grid",
-    styles: { fontSize: 10 },
-    headStyles: { fillColor: [255, 255, 255], textColor: 0 },
-    margin: { left: margin + 5, right: margin + 5 },
-  });
+  // Usamos overflow: "linebreak" para que textos largos se dividan en líneas.
+  const tableStyles = { fontSize: 10, overflow: "linebreak" };
+
+  // --- Paginación especial ---
+  // Estimamos la cantidad máxima de filas que caben en la primera página.
+  // Se asume una altura de fila aproximada de 10 mm y se reserva 30 mm en la parte inferior para totales.
+  const rowHeight = 10;
+  const reservedBottom = 30;
+  const availableHeight = pageHeight - margin - reservedBottom - tableStartY;
+  const maxRowsFirstPage = Math.floor(availableHeight / rowHeight);
+
+  if (rows.length > maxRowsFirstPage) {
+    // Separamos las filas en dos grupos.
+    const firstPageRows = rows.slice(0, maxRowsFirstPage);
+    const remainingRows = rows.slice(maxRowsFirstPage);
+
+    // Calculamos el total de la primera página sumando el valor (convertido a número) de la columna "Total"
+    let sumFirstPage = 0;
+    firstPageRows.forEach((r) => {
+      // Quitamos "$", puntos y cambiamos la coma decimal por punto
+      let totalText = r[3]
+        .replace("$", "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+      sumFirstPage += parseFloat(totalText);
+    });
+    const formattedSumFirstPage =
+      "$" +
+      sumFirstPage.toLocaleString("es-AR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+
+    // Creamos la fila "Transporte" con el total de la primera página
+    const transporteRow = ["Transporte", "", "", formattedSumFirstPage];
+    // La fila "Transporte" se inserta como la primera fila de la segunda parte.
+    remainingRows.unshift(transporteRow);
+
+    // Imprimir la tabla en dos partes:
+    // Primera parte en la página actual:
+    doc.autoTable({
+      startY: tableStartY,
+      head: [headers],
+      body: firstPageRows,
+      theme: "grid",
+      styles: tableStyles,
+      headStyles: { fillColor: [255, 255, 255], textColor: 0 },
+      margin: { left: margin + 5, right: margin + 5 },
+    });
+
+    // Nueva página para el resto de los ítems.
+    doc.addPage();
+    doc.autoTable({
+      startY: margin + 10,
+      head: [headers],
+      body: remainingRows,
+      theme: "grid",
+      styles: tableStyles,
+      headStyles: { fillColor: [255, 255, 255], textColor: 0 },
+      margin: { left: margin + 5, right: margin + 5 },
+    });
+
+    // Los totales se dibujan en la última página.
+    var finalY = doc.lastAutoTable.finalY + 15;
+  } else {
+    // Si todas las filas caben en una sola página:
+    doc.autoTable({
+      startY: tableStartY,
+      head: [headers],
+      body: rows,
+      theme: "grid",
+      styles: tableStyles,
+      headStyles: { fillColor: [255, 255, 255], textColor: 0 },
+      margin: { left: margin + 5, right: margin + 5 },
+    });
+    var finalY = doc.lastAutoTable.finalY + 15;
+  }
 
   // ----------------------
   // TOTALES Y FORMA DE PAGO
   // ----------------------
-  // Se ubica debajo de la tabla con espacio suficiente
-  const autoTableFinalY = doc.lastAutoTable.finalY;
-  let totalsY = autoTableFinalY + 15;
-
-  // Extraer y calcular totales
+  // Extraer y calcular totales globales
   const totalBrutoStr = document
     .getElementById("totalBruto")
     .textContent.replace(/[$.]/g, "")
@@ -359,7 +418,6 @@ function generatePDF() {
 
   // Función auxiliar para escribir totales alineados a la derecha de forma continua
   const writeTotalLine = (y, label, value) => {
-    // Calcular el ancho del texto en negrita y del valor en normal
     doc.setFont("helvetica", "bold");
     const labelWidth = doc.getTextWidth(label);
     doc.setFont("helvetica", "normal");
@@ -371,7 +429,6 @@ function generatePDF() {
       });
     const valueWidth = doc.getTextWidth(valueText);
     const totalTextWidth = labelWidth + valueWidth;
-    // Ubicar a la derecha: x = (pageWidth - margin) - totalTextWidth
     const startX = pageWidth - margin - totalTextWidth - 6;
     doc.setFont("helvetica", "bold");
     doc.text(label, startX, y);
@@ -379,30 +436,30 @@ function generatePDF() {
     doc.text(valueText, startX + labelWidth, y);
   };
 
-  writeTotalLine(totalsY, "TOTAL BRUTO: ", totalBruto);
-  totalsY += 6;
-  writeTotalLine(totalsY, `IVA (${ivaPercent}%): `, iva);
-  totalsY += 6;
-  writeTotalLine(totalsY, "TOTAL PRESUPUESTO: ", totalPresupuesto);
+  writeTotalLine(finalY, "TOTAL BRUTO: ", totalBruto);
+  finalY += 6;
+  writeTotalLine(finalY, `IVA (${ivaPercent}%): `, iva);
+  finalY += 6;
+  writeTotalLine(finalY, "TOTAL PRESUPUESTO: ", totalPresupuesto);
 
   // Forma de pago (alineado a la izquierda)
-  totalsY += 10;
+  finalY += 10;
   doc.setFont("helvetica", "bold");
-  doc.text("Forma de Pago: ", margin + 5, totalsY);
+  doc.text("Forma de Pago: ", margin + 5, finalY);
   doc.setFont("helvetica", "normal");
   doc.text(
     document.getElementById("formaPago").value,
     margin + 6 + doc.getTextWidth("Forma de Pago: "),
-    totalsY
+    finalY
   );
 
   // ----------------------
   // FIRMA
   // ----------------------
-  totalsY += 15;
+  finalY += 15;
   doc.setFont("helvetica", "bold");
-  doc.text("________________________", 140, totalsY);
-  doc.text("Firma y Sello del Proveedor", 140, totalsY + 6);
+  doc.text("________________________", 140, finalY);
+  doc.text("Firma y Sello del Proveedor", 140, finalY + 6);
 
   // Guardar el PDF
   doc.save(
@@ -440,7 +497,6 @@ const requiredFields = [
 ];
 requiredFields.forEach((id) => {
   const field = document.getElementById(id);
-  // Para inputs se usa "input", para selects "change"
   const eventType =
     field.tagName.toLowerCase() === "select" ? "change" : "input";
   field.addEventListener(eventType, () => checkField(field));
