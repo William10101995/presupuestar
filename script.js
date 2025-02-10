@@ -10,12 +10,43 @@ document.querySelectorAll('input[type="number"]').forEach((input) => {
   });
 });
 
+function formatearNumero(input) {
+  // Elimina cualquier carácter no numérico
+  let valor = input.value.replace(/\./g, "").replace(/[^0-9]/g, "");
+
+  // Si el valor no es válido, no lo procesa
+  if (!valor) {
+    input.value = "";
+    return;
+  }
+
+  // Agrega puntos como separadores de miles
+  valor = parseInt(valor).toLocaleString("es-AR");
+
+  // Actualiza el valor del input
+  input.value = valor;
+}
+
+document.querySelectorAll(".item-price").forEach((input) => {
+  input.addEventListener("input", function () {
+    formatCurrencyInput(this);
+    updateTotals(); // Actualiza los totales en tiempo real
+  });
+});
+
+function parseCurrency(value) {
+  if (!value) return 0;
+  // Elimina los puntos (separadores de miles) y reemplaza la coma decimal por punto
+  value = value.replace(/\./g, "").replace(",", ".");
+  return parseFloat(value);
+}
+
 // Función para actualizar los totales y agregar el signo "$" con separador de miles.
 function updateTotals() {
   let totalBruto = 0;
   document.querySelectorAll("#itemsBody tr").forEach((row) => {
     const units = parseFloat(row.querySelector(".item-units").value) || 0;
-    const price = parseFloat(row.querySelector(".item-price").value) || 0;
+    const price = parseCurrency(row.querySelector(".item-price").value) || 0;
     const total = units * price;
     row.querySelector(".item-total").textContent =
       "$" +
@@ -49,11 +80,12 @@ function updateTotals() {
 function addItem() {
   const newRow = document.createElement("tr");
   newRow.innerHTML = `
-	  <td><input type="text" class="item-desc" placeholder="Descripción del item" required></td>
-	  <td><input type="number" class="item-units" min="0" value="1" required></td>
+	  <td><input type="text" class="item-desc" placeholder="Descripción del item" required><div class="feedback-message"></div></td>
+	  <td><input type="number" class="item-units" min="0" value="1" required><div class="feedback-message"></div></td>
 	  <td>
 	    <div class="input-with-symbol">
-	      <input type="number" class="item-price" min="0" step="0.01" value="0" required>
+	      <input type="text" class="item-price" min="0" step="0.01" value="0" oninput="formatearNumero(this)" required>
+        <div class="feedback-message"></div>
 	    </div>
 	  </td>
 	  <td class="item-total">$0.00</td>
@@ -83,16 +115,36 @@ function addEventListenersToInputs(row) {
 
 // Función para validar y marcar cada campo (rojo si está vacío, verde si completo)
 function checkField(field) {
+  const parentContainer = field.closest("td") || field.parentElement;
+  const feedback = parentContainer.querySelector(".feedback-message");
+
   if (!field.value || field.value.trim() === "") {
     field.style.border = "2px solid red";
+    if (feedback) {
+      feedback.textContent = "× Obligatorio";
+      feedback.style.color = "red";
+      feedback.style.display = "block"; // Mostrar siempre el mensaje de error
+    }
   } else {
     field.style.border = "2px solid green";
+    if (feedback) {
+      feedback.textContent = "✓ Excelente";
+      feedback.style.color = "green";
+      feedback.style.display = "block"; // Mostrar siempre el mensaje de éxito
+    }
   }
 }
+
+document.querySelectorAll("input").forEach((input) => {
+  input.addEventListener("focus", () => checkField(input));
+  input.addEventListener("input", () => checkField(input));
+});
 
 // Validación de campos sin alertas
 function validateFields() {
   let valid = true;
+
+  // Validar campos obligatorios generales
   const requiredFields = [
     "numeroPresupuesto",
     "fechaPresupuesto",
@@ -111,11 +163,11 @@ function validateFields() {
 
   requiredFields.forEach((id) => {
     const field = document.getElementById(id);
-    if (!field.value || field.value.trim() === "") {
-      field.style.border = "2px solid red";
-      valid = false;
-    } else {
-      field.style.border = "2px solid green";
+    if (field) {
+      checkField(field); // Llamar a checkField para manejar bordes y leyendas
+      if (!field.value || field.value.trim() === "") {
+        valid = false;
+      }
     }
   });
 
@@ -128,31 +180,34 @@ function validateFields() {
     const desc = row.querySelector(".item-desc");
     const units = row.querySelector(".item-units");
     const price = row.querySelector(".item-price");
-    if (!desc.value || desc.value.trim() === "") {
-      desc.style.border = "2px solid red";
-      valid = false;
-    } else {
-      desc.style.border = "2px solid green";
-    }
-    if (!units.value || units.value.trim() === "") {
-      units.style.border = "2px solid red";
-      valid = false;
-    } else {
-      units.style.border = "2px solid green";
-    }
-    if (!price.value || price.value.trim() === "") {
-      price.style.border = "2px solid red";
-      valid = false;
-    } else {
-      price.style.border = "2px solid green";
-    }
+
+    [desc, units, price].forEach((field) => {
+      if (field) {
+        checkField(field); // Llamar a checkField para manejar bordes y leyendas
+        if (!field.value || field.value.trim() === "") {
+          valid = false;
+        }
+      }
+    });
   });
+
   return valid;
 }
 
 // Función para generar el PDF (sólo se ejecuta si todos los campos son válidos)
 function generatePDF() {
-  if (!validateFields()) return;
+  const warningMessage = document.getElementById("warningMessage");
+
+  if (!validateFields()) {
+    // Mostrar el mensaje con estilo
+    warningMessage.style.display = "flex";
+    warningMessage.textContent =
+      "Por favor, completa todos los campos antes de descargar el PDF.";
+    return; // Salir sin generar el PDF
+  }
+
+  // Ocultar el mensaje si todo está correcto
+  warningMessage.style.display = "none";
 
   // Crear el documento en A4 (210 x 297 mm)
   const { jsPDF } = window.jspdf;

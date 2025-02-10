@@ -32,6 +32,7 @@
           placeholder="000100000025"
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Fecha Presupuesto:</label>
@@ -41,6 +42,7 @@
           placeholder="01-03-2025"
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Razón Social:</label>
@@ -50,6 +52,7 @@
           placeholder="El Norte Seguros S.A."
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>CUIT Emisor:</label>
@@ -59,6 +62,7 @@
           placeholder="20793575890"
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Domicilio:</label>
@@ -68,14 +72,18 @@
           placeholder="Av. 9 de Julio 1234, Resistencia, Chaco"
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Condición IVA:</label>
         <select id="emisorIva" required>
           <option value="">Seleccione...</option>
-          <option>RESPONSABLE INSCRIPTO</option>
-          <option>IVA EXENTO</option>
+          <option>Monotributista</option>
+          <option>Responsable Inscripto</option>
+          <option>IVA Exento</option>
+          <option>No Responsable</option>
         </select>
+        <div class="feedback-message"></div>
       </div>
     </div>
 
@@ -89,6 +97,7 @@
           value="INSTITUTO DEPORTE CHAQUEÑO"
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Dirección:</label>
@@ -98,18 +107,22 @@
           value="Padre Cerqueira 2150"
           required
         />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Ciudad:</label>
         <input type="text" id="clienteCiudad" value="Resistencia" required />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Provincia:</label>
         <input type="text" id="clienteProvincia" value="Chaco" required />
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>CUIT Cliente:</label>
         <input type="number" id="clienteCuit" value="30712337679" required />
+        <div class="feedback-message"></div>
       </div>
     </div>
 
@@ -134,6 +147,7 @@
                 placeholder="Botellas de agua mineral por 500ml"
                 required
               />
+              <div class="feedback-message"></div>
             </td>
             <td>
               <input
@@ -143,17 +157,20 @@
                 placeholder="100"
                 required
               />
+              <div class="feedback-message"></div>
             </td>
             <td>
               <div class="input-with-symbol">
                 <input
-                  type="number"
+                  type="text"
                   class="item-price"
                   min="0"
                   step="0.01"
                   placeholder="150"
+                  oninput="formatearNumero(this)"
                   required
                 />
+                <div class="feedback-message"></div>
               </div>
             </td>
             <td class="item-total">$387.200,00</td>
@@ -177,6 +194,7 @@
           <option>Efectivo</option>
           <option>Cheque</option>
         </select>
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Total Bruto:</label>
@@ -184,14 +202,14 @@
       </div>
       <div class="input-group">
         <label>IVA %:</label>
-        <input
-          type="number"
-          id="ivaPercent"
-          min="0"
-          value="0"
-          step="0.01"
-          required
-        />
+        <select id="ivaPercent">
+          <option value="">Seleccione IVA</option>
+          <option value="0">0%</option>
+          <option value="21">21%</option>
+          <option value="10.5">10.5%</option>
+          <option value="27">27%</option>
+        </select>
+        <div class="feedback-message"></div>
       </div>
       <div class="input-group">
         <label>Total Presupuesto:</label>
@@ -207,6 +225,7 @@
       >
         Descargar PDF
       </button>
+      <div id="warningMessage" style="display: none"></div>
     </div>
 
     <footer>© 2025 PresupuestAR - Todos los derechos reservados</footer>
