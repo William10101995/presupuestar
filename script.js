@@ -367,14 +367,10 @@ function generatePDF() {
     rows.push([
       row.querySelector(".item-desc").value,
       row.querySelector(".item-units").value,
-      "$" +
-        parseFloat(row.querySelector(".item-price").value).toLocaleString(
-          "es-AR",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }
-        ),
+      //agregar coma y dos decimales al final
+
+      "$" + row.querySelector(".item-price").value + ",00",
+
       row.querySelector(".item-total").textContent,
     ]);
   });
@@ -382,23 +378,65 @@ function generatePDF() {
   // Usamos overflow: "linebreak" para que textos largos se dividan en líneas.
   const tableStyles = { fontSize: 10, overflow: "linebreak" };
 
-  // --- Paginación especial ---
-  // Estimamos la cantidad máxima de filas que caben en la primera página.
-  // Se asume una altura de fila aproximada de 10 mm y se reserva 30 mm en la parte inferior para totales.
-  const rowHeight = 10;
-  const reservedBottom = 30;
-  const availableHeight = pageHeight - margin - reservedBottom - tableStartY;
-  const maxRowsFirstPage = Math.floor(availableHeight / rowHeight);
+  // ----------------------PAGINACION ESPECIAL PARA EL TRANSPORTE ----------------------
+  // Función para estimar la altura de una fila basándose en la columna de "Descripción"
+  // Se asume que la descripción es la primera celda del array (índice 0)
+  // Puedes ajustar "descColWidth" (ancho asignado a esa columna) y "lineHeight" (altura por línea) según tu diseño.
+  function estimateRowHeight(row, descColWidth, doc) {
+    const description = row[0] || "";
+    // Establecemos un valor base para la altura mínima de la fila
+    const minHeight = 10; // mm
+    // Definimos el alto aproximado de una línea (puede variar según la fuente y tamaño)
+    const lineHeight = 5; // mm por línea (ajustá este valor según corresponda)
+    // Calculamos el ancho total del texto
+    const textWidth = doc.getTextWidth(description);
+    // Calculamos cuántas líneas ocupará el texto según el ancho disponible para la columna
+    const lines = Math.ceil(textWidth / descColWidth);
+    // La altura estimada es la cantidad de líneas por el alto de línea, más un pequeño padding (2 mm)
+    const estHeight = lines * lineHeight + 2;
+    return Math.max(estHeight, minHeight);
+  }
 
-  if (rows.length > maxRowsFirstPage) {
-    // Separamos las filas en dos grupos.
-    const firstPageRows = rows.slice(0, maxRowsFirstPage);
-    const remainingRows = rows.slice(maxRowsFirstPage);
+  // --- Cálculo y división de filas para paginación ---
+  // Variables ya definidas:
 
-    // Calculamos el total de la primera página sumando el valor (convertido a número) de la columna "Total"
+  // "reservedBottom" es el espacio que se reserva en la parte inferior para totales u otros elementos.
+  const reservedBottom = 50; // mm (ajusta según necesites)
+
+  // El espacio vertical disponible para filas en la primera página:
+  const availableRowsHeight =
+    pageHeight - margin - reservedBottom - tableStartY;
+
+  // Estimamos la altura consumida por las filas para determinar el corte.
+  // "descColWidth" es el ancho estimado (en mm) de la columna de descripción.
+  // Este valor depende del ancho que le asignes a la columna de descripción en tu tabla.
+  const descColWidth = 80; // mm (ajusta según corresponda)
+
+  let cumulativeHeight = 0;
+  let firstPageRows = [];
+  let remainingRows = [];
+
+  // "rows" es el array de arrays con los datos de cada fila, generado previamente.
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const estRowHeight = estimateRowHeight(row, descColWidth, doc);
+    // Si al agregar esta fila no se supera el espacio disponible, se incluye en la primera página
+    if (cumulativeHeight + estRowHeight <= availableRowsHeight) {
+      firstPageRows.push(row);
+      cumulativeHeight += estRowHeight;
+    } else {
+      // Si la fila actual haría exceder el espacio, separamos a partir de aquí
+      remainingRows = rows.slice(i);
+      break;
+    }
+  }
+
+  // Ahora, si quedan filas para una nueva página, se inserta el ítem "Transporte" al inicio de la segunda parte.
+  if (remainingRows.length > 0) {
+    // Se calcula el subtotal de la primera página. Se asume que la columna "Total" es el índice 3.
     let sumFirstPage = 0;
     firstPageRows.forEach((r) => {
-      // Quitamos "$", puntos y cambiamos la coma decimal por punto
+      // Se eliminan símbolos y se transforma la coma decimal a punto.
       let totalText = r[3]
         .replace("$", "")
         .replace(/\./g, "")
@@ -412,13 +450,17 @@ function generatePDF() {
         maximumFractionDigits: 2,
       });
 
-    // Creamos la fila "Transporte" con el total de la primera página
-    const transporteRow = ["Transporte", "", "", formattedSumFirstPage];
-    // La fila "Transporte" se inserta como la primera fila de la segunda parte.
+    // Se crea la fila "Transporte" con cantidad "1" y, tanto en "Precio Unitario" como en "Total", el subtotal.
+    const transporteRow = [
+      "Transporte",
+      "1",
+      formattedSumFirstPage,
+      formattedSumFirstPage,
+    ];
+    // Se inserta al inicio de las filas restantes.
     remainingRows.unshift(transporteRow);
 
-    // Imprimir la tabla en dos partes:
-    // Primera parte en la página actual:
+    // Imprimir la primera parte de la tabla (en la primera página):
     doc.autoTable({
       startY: tableStartY,
       head: [headers],
@@ -429,7 +471,7 @@ function generatePDF() {
       margin: { left: margin + 5, right: margin + 5 },
     });
 
-    // Nueva página para el resto de los ítems.
+    // Crear una nueva página e imprimir la segunda parte (con la fila "Transporte" incluida):
     doc.addPage();
     doc.autoTable({
       startY: margin + 10,
@@ -441,10 +483,10 @@ function generatePDF() {
       margin: { left: margin + 5, right: margin + 5 },
     });
 
-    // Los totales se dibujan en la última página.
+    // Se define la posición final para dibujar totales u otros elementos.
     var finalY = doc.lastAutoTable.finalY + 15;
   } else {
-    // Si todas las filas caben en una sola página:
+    // Si todas las filas caben en una sola página, se imprime la tabla completa.
     doc.autoTable({
       startY: tableStartY,
       head: [headers],
@@ -456,6 +498,7 @@ function generatePDF() {
     });
     var finalY = doc.lastAutoTable.finalY + 15;
   }
+  // ----------------------PAGINACION ESPECIAL PARA EL TRANSPORTE ----------------------
 
   // ----------------------
   // TOTALES Y FORMA DE PAGO
