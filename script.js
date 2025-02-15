@@ -452,6 +452,7 @@ function generatePDF() {
   const calculateTotals = (rows) => {
     let total = 0;
     rows.forEach((r) => {
+      if (r[0] === "Transporte") return; // ← Ignora la fila de Transporte
       let totalText = r[3]
         .replace("$", "")
         .replace(/\./g, "")
