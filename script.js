@@ -218,50 +218,130 @@ function generatePDF() {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
-  // Dibuja un rectángulo que encuadre todo el contenido (margen de 10 mm)
-  doc.rect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin);
+  // Función para agregar encabezado y datos del emisor y cliente
+  const addHeader = () => {
+    // Dibuja un rectángulo que encuadre todo el contenido (margen de 10 mm)
+    doc.rect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin);
 
-  // ----------------------
-  // ENCABEZADO
-  // ----------------------
-  // Título en negrita centrado
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(32);
-  doc.text("PRESUPUESTO", pageWidth / 2, 20, { align: "center" });
+    // Título en negrita centrado
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(32);
+    doc.text("PRESUPUESTO", pageWidth / 2, 20, { align: "center" });
 
-  // Dibujar la "X" en negrita y enmarcada
-  doc.setFontSize(24);
-  const xText = "X";
-  const xPosY = 30;
-  doc.text(xText, pageWidth / 2, xPosY, { align: "center" });
-  const xWidth = doc.getTextWidth(xText);
-  const xHeight = 10; // altura aproximada del texto
-  const xBoxPadding = 2;
-  const xBoxX = pageWidth / 2 - xWidth / 2 - xBoxPadding;
-  const xBoxY = xPosY - 5 - xBoxPadding;
-  const xBoxWidth = xWidth + 2 * xBoxPadding;
-  const xBoxHeight = xHeight + 2 * xBoxPadding;
-  doc.rect(xBoxX, xBoxY, xBoxWidth, xBoxHeight);
+    // Dibujar la "X" en negrita y enmarcada
+    doc.setFontSize(24);
+    const xText = "X";
+    const xPosY = 30;
+    doc.text(xText, pageWidth / 2, xPosY, { align: "center" });
+    const xWidth = doc.getTextWidth(xText);
+    const xHeight = 10; // altura aproximada del texto
+    const xBoxPadding = 2;
+    const xBoxX = pageWidth / 2 - xWidth / 2 - xBoxPadding;
+    const xBoxY = xPosY - 5 - xBoxPadding;
+    const xBoxWidth = xWidth + 2 * xBoxPadding;
+    const xBoxHeight = xHeight + 2 * xBoxPadding;
+    doc.rect(xBoxX, xBoxY, xBoxWidth, xBoxHeight);
 
-  // Leyenda debajo de la "X" (separa 4 mm después del recuadro)
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text(
-    "DOCUMENTO NO VÁLIDO COMO FACTURA",
-    pageWidth / 2,
-    xBoxY + xBoxHeight + 4,
-    { align: "center" }
-  );
+    // Leyenda debajo de la "X" (separa 4 mm después del recuadro)
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(
+      "DOCUMENTO NO VÁLIDO COMO FACTURA",
+      pageWidth / 2,
+      xBoxY + xBoxHeight + 4,
+      { align: "center" }
+    );
 
-  // ----------------------
-  // DATOS DEL EMISOR (ENCUADRADOS)
-  // ----------------------
-  doc.setFontSize(10);
-  const emitterX = margin + 5;
-  const emitterY = 42;
-  const emitterWidth = 90;
-  const emitterHeight = 35;
-  doc.rect(emitterX, emitterY, emitterWidth, emitterHeight);
+    // Datos del emisor
+    doc.setFontSize(10);
+    const emitterX = margin + 5;
+    const emitterY = 42;
+    const emitterWidth = 90;
+    const emitterHeight = 35;
+    doc.rect(emitterX, emitterY, emitterWidth, emitterHeight);
+
+    let textX = emitterX + 3;
+    let textY = emitterY + 7;
+    const lineSpacing = 6;
+    writeLine(
+      textX,
+      textY,
+      "Presupuesto N°: ",
+      document.getElementById("numeroPresupuesto").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "Emisor: ",
+      document.getElementById("emisorRazonSocial").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "Domicilio: ",
+      document.getElementById("emisorDomicilio").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "Condición IVA: ",
+      document.getElementById("emisorIva").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "CUIT: ",
+      document.getElementById("emisorCuit").value
+    );
+
+    // Datos del cliente
+    const clientWidth = 90;
+    const clientHeight = 35;
+    const clientX = pageWidth - margin - clientWidth - 5;
+    const clientY = 42;
+    doc.rect(clientX, clientY, clientWidth, clientHeight);
+
+    textX = clientX + 3;
+    textY = clientY + 7;
+    writeLine(
+      textX,
+      textY,
+      "Cliente: ",
+      document.getElementById("clienteRazonSocial").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "Dirección: ",
+      document.getElementById("clienteDireccion").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "Ciudad: ",
+      document.getElementById("clienteCiudad").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "Provincia: ",
+      document.getElementById("clienteProvincia").value
+    );
+    textY += lineSpacing;
+    writeLine(
+      textX,
+      textY,
+      "CUIT: ",
+      document.getElementById("clienteCuit").value
+    );
+  };
 
   // Función auxiliar para escribir indicador y dato en línea (continuado)
   const writeLine = (x, y, label, value) => {
@@ -272,105 +352,59 @@ function generatePDF() {
     doc.text(value, x + labelWidth, y);
   };
 
-  let textX = emitterX + 3;
-  let textY = emitterY + 7;
-  const lineSpacing = 6;
-  writeLine(
-    textX,
-    textY,
-    "Presupuesto N°: ",
-    document.getElementById("numeroPresupuesto").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "Emisor: ",
-    document.getElementById("emisorRazonSocial").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "Domicilio: ",
-    document.getElementById("emisorDomicilio").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "Condición IVA: ",
-    document.getElementById("emisorIva").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "CUIT: ",
-    document.getElementById("emisorCuit").value
-  );
+  // Función para agregar totales al pie de la página
+  const addFooter = (finalY, totalBruto, ivaPercent, iva, totalPresupuesto) => {
+    const writeTotalLine = (y, label, value) => {
+      doc.setFont("helvetica", "bold");
+      const labelWidth = doc.getTextWidth(label);
+      doc.setFont("helvetica", "normal");
+      const valueText =
+        "$" +
+        value.toLocaleString("es-AR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      const valueWidth = doc.getTextWidth(valueText);
+      const totalTextWidth = labelWidth + valueWidth;
+      const startX = pageWidth - margin - totalTextWidth - 6;
+      doc.setFont("helvetica", "bold");
+      doc.text(label, startX, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(valueText, startX + labelWidth, y);
+    };
 
-  // ----------------------
-  // DATOS DEL CLIENTE (ENCUADRADOS)
-  // ----------------------
-  const clientWidth = 90;
-  const clientHeight = 35;
-  const clientX = pageWidth - margin - clientWidth - 5;
-  const clientY = 42;
-  doc.rect(clientX, clientY, clientWidth, clientHeight);
+    writeTotalLine(finalY, "TOTAL BRUTO: ", totalBruto);
+    finalY += 6;
+    writeTotalLine(finalY, `IVA (${ivaPercent}%): `, iva);
+    finalY += 6;
+    writeTotalLine(finalY, "TOTAL PRESUPUESTO: ", totalPresupuesto);
 
-  textX = clientX + 3;
-  textY = clientY + 7;
-  writeLine(
-    textX,
-    textY,
-    "Cliente: ",
-    document.getElementById("clienteRazonSocial").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "Dirección: ",
-    document.getElementById("clienteDireccion").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "Ciudad: ",
-    document.getElementById("clienteCiudad").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "Provincia: ",
-    document.getElementById("clienteProvincia").value
-  );
-  textY += lineSpacing;
-  writeLine(
-    textX,
-    textY,
-    "CUIT: ",
-    document.getElementById("clienteCuit").value
-  );
+    // Forma de pago (alineado a la izquierda)
+    finalY += 10;
+    doc.setFont("helvetica", "bold");
+    doc.text("Forma de Pago: ", margin + 5, finalY);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      document.getElementById("formaPago").value,
+      margin + 6 + doc.getTextWidth("Forma de Pago: "),
+      finalY
+    );
 
-  // ----------------------
-  // TABLA DE ÍTEMS
-  // ----------------------
+    // Firma
+    finalY += 15;
+    doc.setFont("helvetica", "bold");
+    doc.text("________________________", 140, finalY);
+    doc.text("Firma y Sello del Proveedor", 140, finalY + 6);
+  };
+
   // Configuramos la cabecera y generamos la matriz de filas
-  const tableStartY = emitterY + emitterHeight + 15;
   const headers = ["Descripción", "Unidades", "Precio Unitario", "Total"];
   const rows = [];
   document.querySelectorAll("#itemsBody tr").forEach((row) => {
     rows.push([
       row.querySelector(".item-desc").value,
       row.querySelector(".item-units").value,
-      //agregar coma y dos decimales al final
-
       "$" + row.querySelector(".item-price").value + ",00",
-
       row.querySelector(".item-total").textContent,
     ]);
   });
@@ -378,117 +412,63 @@ function generatePDF() {
   // Usamos overflow: "linebreak" para que textos largos se dividan en líneas.
   const tableStyles = { fontSize: 10, overflow: "linebreak" };
 
-  // ----------------------PAGINACION ESPECIAL PARA EL TRANSPORTE ----------------------
   // Función para estimar la altura de una fila basándose en la columna de "Descripción"
-  // Se asume que la descripción es la primera celda del array (índice 0)
-  // Puedes ajustar "descColWidth" (ancho asignado a esa columna) y "lineHeight" (altura por línea) según tu diseño.
   function estimateRowHeight(row, descColWidth, doc) {
     const description = row[0] || "";
-    // Establecemos un valor base para la altura mínima de la fila
     const minHeight = 10; // mm
-    // Definimos el alto aproximado de una línea (puede variar según la fuente y tamaño)
     const lineHeight = 5; // mm por línea (ajustá este valor según corresponda)
-    // Calculamos el ancho total del texto
     const textWidth = doc.getTextWidth(description);
-    // Calculamos cuántas líneas ocupará el texto según el ancho disponible para la columna
     const lines = Math.ceil(textWidth / descColWidth);
-    // La altura estimada es la cantidad de líneas por el alto de línea, más un pequeño padding (2 mm)
     const estHeight = lines * lineHeight + 2;
     return Math.max(estHeight, minHeight);
   }
 
-  // --- Cálculo y división de filas para paginación ---
-  // Variables ya definidas:
-
-  // "reservedBottom" es el espacio que se reserva en la parte inferior para totales u otros elementos.
+  // Variables para paginación
   const reservedBottom = 50; // mm (ajusta según necesites)
-
-  // El espacio vertical disponible para filas en la primera página:
-  const availableRowsHeight =
-    pageHeight - margin - reservedBottom - tableStartY;
-
-  // Estimamos la altura consumida por las filas para determinar el corte.
-  // "descColWidth" es el ancho estimado (en mm) de la columna de descripción.
-  // Este valor depende del ancho que le asignes a la columna de descripción en tu tabla.
   const descColWidth = 80; // mm (ajusta según corresponda)
-
   let cumulativeHeight = 0;
   let firstPageRows = [];
   let remainingRows = [];
+  let totalBruto = 0;
 
-  // "rows" es el array de arrays con los datos de cada fila, generado previamente.
+  // Estimamos la altura consumida por las filas para determinar el corte.
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const estRowHeight = estimateRowHeight(row, descColWidth, doc);
-    // Si al agregar esta fila no se supera el espacio disponible, se incluye en la primera página
-    if (cumulativeHeight + estRowHeight <= availableRowsHeight) {
+    if (
+      cumulativeHeight + estRowHeight <=
+      pageHeight - margin - reservedBottom - 90
+    ) {
+      // Ajuste de espacio
       firstPageRows.push(row);
       cumulativeHeight += estRowHeight;
     } else {
-      // Si la fila actual haría exceder el espacio, separamos a partir de aquí
       remainingRows = rows.slice(i);
       break;
     }
   }
 
-  // Ahora, si quedan filas para una nueva página, se inserta el ítem "Transporte" al inicio de la segunda parte.
-  if (remainingRows.length > 0) {
-    // Se calcula el subtotal de la primera página. Se asume que la columna "Total" es el índice 3.
-    let sumFirstPage = 0;
-    firstPageRows.forEach((r) => {
-      // Se eliminan símbolos y se transforma la coma decimal a punto.
+  // Función para calcular totales
+  const calculateTotals = (rows) => {
+    let total = 0;
+    rows.forEach((r) => {
       let totalText = r[3]
         .replace("$", "")
         .replace(/\./g, "")
         .replace(",", ".");
-      sumFirstPage += parseFloat(totalText);
+      total += parseFloat(totalText);
     });
-    const formattedSumFirstPage =
-      "$" +
-      sumFirstPage.toLocaleString("es-AR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+    return total;
+  };
 
-    // Se crea la fila "Transporte" con cantidad "1" y, tanto en "Precio Unitario" como en "Total", el subtotal.
-    const transporteRow = [
-      "Transporte",
-      "1",
-      formattedSumFirstPage,
-      formattedSumFirstPage,
-    ];
-    // Se inserta al inicio de las filas restantes.
-    remainingRows.unshift(transporteRow);
-
-    // Imprimir la primera parte de la tabla (en la primera página):
+  // Función para agregar una nueva página con encabezado, tabla y pie de página
+  const addPage = (rows, isFirstPage = false) => {
+    if (!isFirstPage) {
+      doc.addPage();
+    }
+    addHeader();
     doc.autoTable({
-      startY: tableStartY,
-      head: [headers],
-      body: firstPageRows,
-      theme: "grid",
-      styles: tableStyles,
-      headStyles: { fillColor: [255, 255, 255], textColor: 0 },
-      margin: { left: margin + 5, right: margin + 5 },
-    });
-
-    // Crear una nueva página e imprimir la segunda parte (con la fila "Transporte" incluida):
-    doc.addPage();
-    doc.autoTable({
-      startY: margin + 10,
-      head: [headers],
-      body: remainingRows,
-      theme: "grid",
-      styles: tableStyles,
-      headStyles: { fillColor: [255, 255, 255], textColor: 0 },
-      margin: { left: margin + 5, right: margin + 5 },
-    });
-
-    // Se define la posición final para dibujar totales u otros elementos.
-    var finalY = doc.lastAutoTable.finalY + 15;
-  } else {
-    // Si todas las filas caben en una sola página, se imprime la tabla completa.
-    doc.autoTable({
-      startY: tableStartY,
+      startY: 90, // Ajuste de espacio
       head: [headers],
       body: rows,
       theme: "grid",
@@ -496,68 +476,62 @@ function generatePDF() {
       headStyles: { fillColor: [255, 255, 255], textColor: 0 },
       margin: { left: margin + 5, right: margin + 5 },
     });
-    var finalY = doc.lastAutoTable.finalY + 15;
-  }
-  // ----------------------PAGINACION ESPECIAL PARA EL TRANSPORTE ----------------------
-
-  // ----------------------
-  // TOTALES Y FORMA DE PAGO
-  // ----------------------
-  // Extraer y calcular totales globales
-  const totalBrutoStr = document
-    .getElementById("totalBruto")
-    .textContent.replace(/[$.]/g, "")
-    .replace(",", ".");
-  const totalBruto = parseFloat(totalBrutoStr) || 0;
-  const ivaPercent =
-    parseFloat(document.getElementById("ivaPercent").value) || 0;
-  const iva = totalBruto * (ivaPercent / 100);
-  const totalPresupuesto = totalBruto + iva;
-
-  // Función auxiliar para escribir totales alineados a la derecha de forma continua
-  const writeTotalLine = (y, label, value) => {
-    doc.setFont("helvetica", "bold");
-    const labelWidth = doc.getTextWidth(label);
-    doc.setFont("helvetica", "normal");
-    const valueText =
-      "$" +
-      value.toLocaleString("es-AR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-    const valueWidth = doc.getTextWidth(valueText);
-    const totalTextWidth = labelWidth + valueWidth;
-    const startX = pageWidth - margin - totalTextWidth - 6;
-    doc.setFont("helvetica", "bold");
-    doc.text(label, startX, y);
-    doc.setFont("helvetica", "normal");
-    doc.text(valueText, startX + labelWidth, y);
+    const finalY = doc.lastAutoTable.finalY + 15;
+    const ivaPercent =
+      parseFloat(document.getElementById("ivaPercent").value) || 0;
+    const iva = totalBruto * (ivaPercent / 100);
+    const totalPresupuesto = totalBruto + iva;
+    addFooter(finalY, totalBruto, ivaPercent, iva, totalPresupuesto);
   };
 
-  writeTotalLine(finalY, "TOTAL BRUTO: ", totalBruto);
-  finalY += 6;
-  writeTotalLine(finalY, `IVA (${ivaPercent}%): `, iva);
-  finalY += 6;
-  writeTotalLine(finalY, "TOTAL PRESUPUESTO: ", totalPresupuesto);
+  // Agregar la primera página
+  totalBruto += calculateTotals(firstPageRows);
+  addPage(firstPageRows, true);
 
-  // Forma de pago (alineado a la izquierda)
-  finalY += 10;
-  doc.setFont("helvetica", "bold");
-  doc.text("Forma de Pago: ", margin + 5, finalY);
-  doc.setFont("helvetica", "normal");
-  doc.text(
-    document.getElementById("formaPago").value,
-    margin + 6 + doc.getTextWidth("Forma de Pago: "),
-    finalY
-  );
+  // Agregar "Transporte" SOLO UNA VEZ si hay múltiples páginas
+  if (remainingRows.length > 0) {
+    const transporteRow = [
+      "Transporte",
+      "1",
+      "$" +
+        totalBruto.toLocaleString("es-AR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      "$" +
+        totalBruto.toLocaleString("es-AR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+    ];
+    remainingRows.unshift(transporteRow); // ← Se añade una sola vez
+  }
 
-  // ----------------------
-  // FIRMA
-  // ----------------------
-  finalY += 15;
-  doc.setFont("helvetica", "bold");
-  doc.text("________________________", 140, finalY);
-  doc.text("Firma y Sello del Proveedor", 140, finalY + 6);
+  // Agregar páginas restantes SIN añadir "Transporte" de nuevo
+  while (remainingRows.length > 0) {
+    cumulativeHeight = 0;
+    firstPageRows = [];
+    for (let i = 0; i < remainingRows.length; i++) {
+      const row = remainingRows[i];
+      const estRowHeight = estimateRowHeight(row, descColWidth, doc);
+      if (
+        cumulativeHeight + estRowHeight <=
+        pageHeight - margin - reservedBottom - 90
+      ) {
+        firstPageRows.push(row);
+        cumulativeHeight += estRowHeight;
+      } else {
+        remainingRows = remainingRows.slice(i);
+        break;
+      }
+      // Si llegamos al final sin cortar, remainingRows queda vacío
+      if (i === remainingRows.length - 1) {
+        remainingRows = [];
+      }
+    }
+    totalBruto += calculateTotals(firstPageRows);
+    addPage(firstPageRows);
+  }
 
   // Guardar el PDF
   doc.save(
