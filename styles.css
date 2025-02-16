@@ -194,3 +194,52 @@ input[type="number"]::-webkit-inner-spin-button {
   height: auto;
   filter: grayscale(30%);
 }
+
+.item-total {
+  min-width: 110px !important; /* Ancho mínimo fijo */
+  max-width: 150px !important; /* Límite máximo */
+  white-space: normal !important; /* Permite wrap */
+  word-break: break-word; /* Rompe números largos */
+}
+
+/* ========== AJUSTES COLUMNA "UNIDADES" ========== */
+.items-table td:nth-child(2) {
+  /* Selecciona segunda columna */
+  min-width: 100px !important; /* Ancho mínimo reducido */
+  max-width: 100px !important;
+  text-align: left; /* Centra contenido */
+}
+
+/* Inputs numéricos */
+.items-table td:nth-child(2) input {
+  max-width: 120px; /* Limita el ancho del input */
+  padding: 8px 5px; /* Reduce padding horizontal */
+  text-align: left;
+}
+
+.items-table td:nth-child(3) {
+  /* Selecciona tercera columna */
+  min-width: 120px !important; /* Ancho mínimo reducido */
+  max-width: 120px !important;
+  text-align: left; /* Centra contenido */
+}
+
+/* Inputs numéricos */
+.items-table td:nth-child(3) input {
+  max-width: 160px; /* Limita el ancho del input */
+  padding: 8px 15px; /* Reduce padding horizontal */
+  text-align: left;
+}
+
+.items-table td:nth-child(1) {
+  /* Selecciona tercera columna */
+  min-width: 150px !important; /* Ancho mínimo reducido */
+  max-width: 150px !important;
+  text-align: left; /* Centra contenido */
+}
+
+/* Inputs numéricos */
+.items-table td:nth-child(1) input {
+  max-width: 180px; /* Limita el ancho del input */
+  text-align: left;
+}
