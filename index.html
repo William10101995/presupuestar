@@ -88,9 +88,12 @@
           type="text"
           id="emisorRazonSocial"
           placeholder="Mi Empresa S.A."
+          maxlength="38"
+          data-validation="length"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>CUIT Emisor:</label>
@@ -98,9 +101,13 @@
           type="number"
           id="emisorCuit"
           placeholder="20793575890"
+          data-validation="length"
+          maxlength="11"
+          oninput="validarLongitud(this)"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>Domicilio:</label>
@@ -108,9 +115,12 @@
           type="text"
           id="emisorDomicilio"
           placeholder="Av. 9 de Julio 1234, Resistencia, Chaco"
+          maxlength="38"
+          data-validation="length"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>Condición IVA:</label>
@@ -133,9 +143,12 @@
           type="text"
           id="clienteRazonSocial"
           placeholder="Empresa Cliente S.R.L."
+          maxlength="37"
+          data-validation="length"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>Dirección:</label>
@@ -143,9 +156,12 @@
           type="text"
           id="clienteDireccion"
           placeholder="Padre Cerqueira 2150"
+          maxlength="34"
+          data-validation="length"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>Ciudad:</label>
@@ -153,14 +169,25 @@
           type="text"
           id="clienteCiudad"
           placeholder="Resistencia"
+          maxlength="36"
+          data-validation="length"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>Provincia:</label>
-        <input type="text" id="clienteProvincia" placeholder="Chaco" required />
+        <input
+          type="text"
+          id="clienteProvincia"
+          placeholder="Chaco"
+          maxlength="34"
+          data-validation="length"
+          required
+        />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>CUIT Cliente:</label>
@@ -168,9 +195,13 @@
           type="number"
           id="clienteCuit"
           placeholder="30712437677"
+          data-validation="length"
+          maxlength="11"
+          oninput="validarLongitud(this)"
           required
         />
         <div class="feedback-message"></div>
+        <div class="char-counter"></div>
       </div>
     </div>
 

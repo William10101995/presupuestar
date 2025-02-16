@@ -578,3 +578,61 @@ requiredFields.forEach((id) => {
 // Inicialización: agregar eventos a la fila inicial y actualizar totales
 addEventListenersToInputs(document.querySelector("#itemsBody tr"));
 updateTotals();
+
+function updateCharCounter(input) {
+  const counter = input.parentElement.querySelector(".char-counter");
+  const currentLength = input.value.length;
+  const maxLength = input.getAttribute("maxlength");
+
+  // Mostrar solo si hay contenido
+  if (currentLength > 0) {
+    counter.textContent = `${currentLength}/${maxLength}`;
+    counter.style.opacity = "1";
+
+    // Cambiar color si se acerca al límite
+    counter.style.color =
+      currentLength >= maxLength * 0.9 ? "#e67e22" : "#7f8c8d";
+  } else {
+    counter.textContent = "";
+    counter.style.opacity = "0";
+  }
+}
+
+// Inicialización al cargar
+document.querySelectorAll("input[maxlength]").forEach((input) => {
+  input.addEventListener("input", () => updateCharCounter(input));
+});
+
+// JavaScript
+function validarLongitud(input) {
+  const maxLength = 11;
+  const currentValue = input.value.replace(/\D/g, ""); // Eliminar no numéricos
+  const currentLength = currentValue.length;
+
+  // Limitar a 11 dígitos
+  if (currentLength > maxLength) {
+    input.value = currentValue.slice(0, maxLength);
+    return;
+  }
+
+  // Actualizar contador
+  const counter = input.parentElement.querySelector(".char-counter");
+  counter.textContent =
+    currentLength > 0 ? `${currentLength}/${maxLength}` : "";
+
+  // Validación visual
+  const feedback = input.nextElementSibling;
+  if (currentLength < maxLength) {
+    input.setCustomValidity("CUIT debe tener 11 dígitos");
+    showError(feedback, "Faltan dígitos");
+  } else {
+    input.setCustomValidity("");
+    clearError(feedback);
+  }
+
+  // Validar formato argentino (opcional)
+  if (currentLength === 11 && !validarFormatoCUIT(input.value)) {
+    input.setCustomValidity("CUIT inválido");
+    showError(feedback, "CUIT no válido");
+  }
+}
