@@ -258,3 +258,93 @@ input[type="number"]::-webkit-inner-spin-button {
   transition: all 0.3s ease;
   opacity: 0;
 }
+
+/* Estilo para pantalla pequeña */
+@media (min-width: 375px) {
+  /* ========== AJUSTES COLUMNA "UNIDADES" ========== */
+  .items-table td:nth-child(2) {
+    /* Selecciona segunda columna */
+    min-width: 100px !important; /* Ancho mínimo reducido */
+    max-width: 100px !important;
+    text-align: left; /* Centra contenido */
+  }
+
+  /* Inputs numéricos */
+  .items-table td:nth-child(2) input {
+    max-width: 80px; /* Limita el ancho del input */
+    padding: 8px 5px; /* Reduce padding horizontal */
+    text-align: left;
+  }
+
+  .items-table td:nth-child(3) {
+    /* Selecciona tercera columna */
+    min-width: 120px !important; /* Ancho mínimo reducido */
+    max-width: 120px !important;
+    text-align: left; /* Centra contenido */
+  }
+
+  /* Inputs numéricos */
+  .items-table td:nth-child(3) input {
+    max-width: 120px; /* Limita el ancho del input */
+    padding: 8px 15px; /* Reduce padding horizontal */
+    text-align: left;
+  }
+
+  .items-table td:nth-child(1) {
+    /* Selecciona tercera columna */
+    min-width: 100px !important; /* Ancho mínimo reducido */
+    max-width: 120px !important;
+    text-align: left; /* Centra contenido */
+  }
+
+  /* Inputs numéricos */
+  .items-table td:nth-child(1) input {
+    max-width: 80px; /* Limita el ancho del input */
+    text-align: left;
+  }
+}
+
+/* Estilo para pantalla pequeña */
+@media (min-width: 980px) {
+  /* ========== AJUSTES COLUMNA "UNIDADES" ========== */
+  .items-table td:nth-child(2) {
+    /* Selecciona segunda columna */
+    min-width: 100px !important; /* Ancho mínimo reducido */
+    max-width: 100px !important;
+    text-align: left; /* Centra contenido */
+  }
+
+  /* Inputs numéricos */
+  .items-table td:nth-child(2) input {
+    max-width: 80px; /* Limita el ancho del input */
+    padding: 8px 5px; /* Reduce padding horizontal */
+    text-align: left;
+  }
+
+  .items-table td:nth-child(3) {
+    /* Selecciona tercera columna */
+    min-width: 120px !important; /* Ancho mínimo reducido */
+    max-width: 120px !important;
+    text-align: left; /* Centra contenido */
+  }
+
+  /* Inputs numéricos */
+  .items-table td:nth-child(3) input {
+    max-width: 120px; /* Limita el ancho del input */
+    padding: 8px 15px; /* Reduce padding horizontal */
+    text-align: left;
+  }
+
+  .items-table td:nth-child(1) {
+    /* Selecciona tercera columna */
+    min-width: 100px !important; /* Ancho mínimo reducido */
+    max-width: 120px !important;
+    text-align: left; /* Centra contenido */
+  }
+
+  /* Inputs numéricos */
+  .items-table td:nth-child(1) input {
+    max-width: 150px; /* Limita el ancho del input */
+    text-align: left;
+  }
+}
