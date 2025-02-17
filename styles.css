@@ -205,44 +205,39 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 /* ========== AJUSTES COLUMNA "UNIDADES" ========== */
+/* Estilos base (para móviles y pantallas pequeñas) */
 .items-table td:nth-child(2) {
-  /* Selecciona segunda columna */
-  min-width: 100px !important; /* Ancho mínimo reducido */
-  max-width: 100px !important;
-  text-align: left; /* Centra contenido */
+  min-width: 100px;
+  max-width: 100px;
+  text-align: left;
 }
 
-/* Inputs numéricos */
 .items-table td:nth-child(2) input {
-  max-width: 120px; /* Limita el ancho del input */
-  padding: 8px 5px; /* Reduce padding horizontal */
+  max-width: 80px;
+  padding: 8px 5px;
   text-align: left;
 }
 
 .items-table td:nth-child(3) {
-  /* Selecciona tercera columna */
-  min-width: 120px !important; /* Ancho mínimo reducido */
-  max-width: 120px !important;
-  text-align: left; /* Centra contenido */
+  min-width: 120px;
+  max-width: 120px;
+  text-align: left;
 }
 
-/* Inputs numéricos */
 .items-table td:nth-child(3) input {
-  max-width: 160px; /* Limita el ancho del input */
-  padding: 8px 15px; /* Reduce padding horizontal */
+  max-width: 120px;
+  padding: 8px 15px;
   text-align: left;
 }
 
 .items-table td:nth-child(1) {
-  /* Selecciona tercera columna */
-  min-width: 150px !important; /* Ancho mínimo reducido */
-  max-width: 150px !important;
-  text-align: left; /* Centra contenido */
+  min-width: 100px;
+  max-width: 120px;
+  text-align: left;
 }
 
-/* Inputs numéricos */
 .items-table td:nth-child(1) input {
-  max-width: 180px; /* Limita el ancho del input */
+  max-width: 80px;
   text-align: left;
 }
 
@@ -258,93 +253,80 @@ input[type="number"]::-webkit-inner-spin-button {
   transition: all 0.3s ease;
   opacity: 0;
 }
-
-/* Estilo para pantalla pequeña */
-@media (min-width: 375px) {
-  /* ========== AJUSTES COLUMNA "UNIDADES" ========== */
-  .items-table td:nth-child(2) {
-    /* Selecciona segunda columna */
-    min-width: 100px !important; /* Ancho mínimo reducido */
-    max-width: 100px !important;
-    text-align: left; /* Centra contenido */
-  }
-
-  /* Inputs numéricos */
-  .items-table td:nth-child(2) input {
-    max-width: 80px; /* Limita el ancho del input */
-    padding: 8px 5px; /* Reduce padding horizontal */
-    text-align: left;
-  }
-
-  .items-table td:nth-child(3) {
-    /* Selecciona tercera columna */
-    min-width: 120px !important; /* Ancho mínimo reducido */
-    max-width: 120px !important;
-    text-align: left; /* Centra contenido */
-  }
-
-  /* Inputs numéricos */
-  .items-table td:nth-child(3) input {
-    max-width: 120px; /* Limita el ancho del input */
-    padding: 8px 15px; /* Reduce padding horizontal */
-    text-align: left;
-  }
-
-  .items-table td:nth-child(1) {
-    /* Selecciona tercera columna */
-    min-width: 100px !important; /* Ancho mínimo reducido */
-    max-width: 120px !important;
-    text-align: left; /* Centra contenido */
-  }
-
-  /* Inputs numéricos */
+/* Ajustes para pantallas grandes (a partir de 980px) */
+@media (min-width: 980px) {
+  /* Aquí solo modificamos lo que cambia en pantallas grandes */
   .items-table td:nth-child(1) input {
-    max-width: 80px; /* Limita el ancho del input */
-    text-align: left;
+    max-width: 150px;
   }
 }
 
-/* Estilo para pantalla pequeña */
-@media (min-width: 980px) {
-  /* ========== AJUSTES COLUMNA "UNIDADES" ========== */
-  .items-table td:nth-child(2) {
-    /* Selecciona segunda columna */
-    min-width: 100px !important; /* Ancho mínimo reducido */
-    max-width: 100px !important;
-    text-align: left; /* Centra contenido */
-  }
-
-  /* Inputs numéricos */
-  .items-table td:nth-child(2) input {
-    max-width: 80px; /* Limita el ancho del input */
-    padding: 8px 5px; /* Reduce padding horizontal */
-    text-align: left;
-  }
-
+@media (max-width: 720px) {
+  .items-table td:nth-child(1),
+  .items-table td:nth-child(2),
   .items-table td:nth-child(3) {
-    /* Selecciona tercera columna */
-    min-width: 120px !important; /* Ancho mínimo reducido */
-    max-width: 120px !important;
-    text-align: left; /* Centra contenido */
-  }
-
-  /* Inputs numéricos */
-  .items-table td:nth-child(3) input {
-    max-width: 120px; /* Limita el ancho del input */
-    padding: 8px 15px; /* Reduce padding horizontal */
+    width: 100%;
+    max-width: 100%;
     text-align: left;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  .items-table td:nth-child(4),
+  .items-table td:nth-child(5) {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: right;
+    padding: 8px;
+    box-sizing: border-box;
   }
 
-  .items-table td:nth-child(1) {
-    /* Selecciona tercera columna */
-    min-width: 100px !important; /* Ancho mínimo reducido */
-    max-width: 120px !important;
-    text-align: left; /* Centra contenido */
+  .items-table td input {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  /* 1) Ocultamos thead, y forzamos display block en todo */
+  .items-table thead {
+    display: none;
+  }
+  .items-table,
+  .items-table tbody,
+  .items-table tr,
+  .items-table td {
+    display: block;
+    width: 100%;
+    border: none; /* Quitamos el borde de tabla */
   }
 
-  /* Inputs numéricos */
-  .items-table td:nth-child(1) input {
-    max-width: 150px; /* Limita el ancho del input */
-    text-align: left;
+  /* 2) Cada fila (tr) se comporta como una “tarjeta” */
+  .items-table tr {
+    margin-bottom: 1rem;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+  }
+
+  /* 3) Cada celda (td) se apila. Quitamos bordes y ajustamos padding */
+  .items-table td {
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #eee; /* línea suave entre campos */
+    padding: 0.5rem;
+  }
+
+  /* Evitamos línea extra en la última celda de cada tarjeta */
+  .items-table td:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  /* 4) Ponemos la etiqueta encima (en lugar de “a la izquierda”) */
+  .items-table td::before {
+    content: attr(data-label);
+    display: block; /* Muestra la etiqueta en su propia línea */
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #555;
   }
 }
