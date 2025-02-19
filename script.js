@@ -1,3 +1,85 @@
+fetch("localidades.json")
+  .then((response) => response.json())
+  .then((data) => {
+    const localidades = data.localidades;
+    const provinciasUnicas = new Map();
+
+    // Obtener las provincias sin duplicados usando el nombre como clave
+    localidades.forEach((item) => {
+      const provNombre = item.provincia.nombre;
+      if (!provinciasUnicas.has(provNombre)) {
+        provinciasUnicas.set(provNombre, provNombre);
+      }
+    });
+
+    // Convertir Map a un array y ordenar alfabéticamente por nombre de provincia
+    const provinciasOrdenadas = [...provinciasUnicas.keys()].sort((a, b) =>
+      a.localeCompare(b)
+    );
+
+    const selectProvincia = document.getElementById("clienteProvincia");
+
+    // Agregar opciones de provincias ordenadas, usando el nombre como value y texto
+    provinciasOrdenadas.forEach((nombre) => {
+      const option = document.createElement("option");
+      option.value = nombre;
+      option.textContent = nombre;
+      selectProvincia.appendChild(option);
+    });
+
+    const selectLocalidad = document.getElementById("clienteCiudad");
+
+    selectProvincia.addEventListener("change", function () {
+      const provinciaSeleccionada = this.value;
+      selectLocalidad.innerHTML =
+        '<option value="">Seleccione localidad</option>';
+      const feedbackProvincia = this.nextElementSibling;
+
+      if (!provinciaSeleccionada) {
+        feedbackProvincia.textContent = "× Obligatorio";
+        feedbackProvincia.style.color = "red";
+        this.style.borderColor = "red"; // Marcar el borde en rojo
+      } else {
+        feedbackProvincia.textContent = "✓ Excelente";
+        feedbackProvincia.style.color = "green";
+        this.style.borderColor = "green"; // Marcar el borde en verde
+
+        // Filtrar y ordenar localidades alfabéticamente usando el nombre de la provincia
+        const localidadesFiltradas = localidades
+          .filter((item) => item.provincia.nombre === provinciaSeleccionada)
+          .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+        localidadesFiltradas.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item.nombre; // Guardamos el nombre en el value
+          option.textContent = item.nombre;
+          selectLocalidad.appendChild(option);
+        });
+      }
+
+      // Limpiar feedback de localidad si ya se eligió provincia
+      const feedbackLocalidad = selectLocalidad.nextElementSibling;
+      feedbackLocalidad.textContent = "";
+      selectLocalidad.style.borderColor = ""; // Restablecer borde de localidad
+    });
+
+    selectLocalidad.addEventListener("change", function () {
+      const localidadSeleccionada = this.value;
+      const feedbackLocalidad = this.nextElementSibling;
+
+      if (!localidadSeleccionada) {
+        feedbackLocalidad.textContent = "× Obligatorio";
+        feedbackLocalidad.style.color = "red";
+        this.style.borderColor = "red"; // Marcar el borde en rojo
+      } else {
+        feedbackLocalidad.textContent = "✓ Excelente";
+        feedbackLocalidad.style.color = "green";
+        this.style.borderColor = "green"; // Marcar el borde en verde
+      }
+    });
+  })
+  .catch((error) => console.error("Error al cargar el JSON:", error));
+
 // Evitar caracteres no numéricos en inputs de tipo number (excepto para precios que admiten punto)
 document.querySelectorAll('input[type="number"]').forEach((input) => {
   input.addEventListener("input", function () {

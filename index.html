@@ -164,30 +164,18 @@
         <div class="char-counter"></div>
       </div>
       <div class="input-group">
-        <label>Ciudad:</label>
-        <input
-          type="text"
-          id="clienteCiudad"
-          placeholder="Resistencia"
-          maxlength="36"
-          data-validation="length"
-          required
-        />
+        <label for="clienteProvincia">Provincia:</label>
+        <select id="clienteProvincia" required>
+          <option value="">Seleccione una provincia</option>
+        </select>
         <div class="feedback-message"></div>
-        <div class="char-counter"></div>
       </div>
       <div class="input-group">
-        <label>Provincia:</label>
-        <input
-          type="text"
-          id="clienteProvincia"
-          placeholder="Chaco"
-          maxlength="34"
-          data-validation="length"
-          required
-        />
+        <label for="clienteCiudad">Localidad:</label>
+        <select id="clienteCiudad" required>
+          <option value="">Seleccione una localidad</option>
+        </select>
         <div class="feedback-message"></div>
-        <div class="char-counter"></div>
       </div>
       <div class="input-group">
         <label>CUIT Cliente:</label>
@@ -252,7 +240,7 @@
                 <div class="feedback-message"></div>
               </div>
             </td>
-            <td data-label="Total" class="item-total">$387.200,00</td>
+            <td data-label="Total" class="item-total">$ 0,00</td>
             <td data-label="Acciones">
               <button class="btn remove-btn">Eliminar</button>
             </td>
@@ -263,10 +251,9 @@
         Agregar Item
       </button>
     </div>
-
     <div class="section total-section">
       <div class="input-group">
-        <label>Forma de Pago:</label>
+        <label for="formaPago">Forma de Pago:</label>
         <select id="formaPago" required>
           <option value="">Seleccione...</option>
           <option>Transferencia Bancaria</option>
@@ -280,8 +267,8 @@
         <span id="totalBruto">$0</span>
       </div>
       <div class="input-group">
-        <label>IVA %:</label>
-        <select id="ivaPercent">
+        <label for="ivaPercent">IVA %:</label>
+        <select id="ivaPercent" required>
           <option value="">Seleccione IVA</option>
           <option value="0">0%</option>
           <option value="21">21%</option>
